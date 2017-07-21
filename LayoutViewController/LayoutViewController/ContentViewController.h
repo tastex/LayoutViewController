@@ -1,5 +1,5 @@
 //
-//  LayoutViewController.h
+//  ContentViewController.h
 //  LayoutViewController
 //
 //  Created by tastex on 19.07.17.
@@ -8,9 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LayoutViewController : UIViewController
-
-@property (strong, nonatomic) NSMutableArray *viewControllers; 
+@interface ContentViewController : UIViewController
 
 @end
-

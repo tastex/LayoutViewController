@@ -20,7 +20,9 @@
     CGRect mainFrame = [[UIScreen mainScreen] bounds];
     UIWindow *window = [[UIWindow alloc] initWithFrame:mainFrame];
     
-    LayoutViewController *rootVC = [[LayoutViewController alloc] init];
+    LayoutViewController *layoutViewController = [[LayoutViewController alloc] init];
+    
+    UINavigationController *rootVC = [[UINavigationController alloc] initWithRootViewController:layoutViewController];
     
     window.rootViewController = rootVC;
     
