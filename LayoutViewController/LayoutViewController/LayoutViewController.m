@@ -74,10 +74,18 @@
 
 
 - (void)updateContent {
+
     for (UIViewController *childVC in self.childViewControllers) {
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.5];
+        [UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
+        
         childVC.view.frame = [self getViewFrameForViewController: childVC];
         [childVC viewWillAppear:NO];
+        
+        [UIView commitAnimations];
     }
+    
 }
 
 
