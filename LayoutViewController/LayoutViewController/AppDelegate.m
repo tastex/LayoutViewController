@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "LayoutViewController.h"
+#import "RootViewController.h"
 
 @interface AppDelegate ()
 
@@ -20,11 +20,11 @@
     CGRect mainFrame = [[UIScreen mainScreen] bounds];
     UIWindow *window = [[UIWindow alloc] initWithFrame:mainFrame];
     
-    LayoutViewController *layoutViewController = [[LayoutViewController alloc] init];
+    RootViewController *rootVC = [[RootViewController alloc] init];
     
-    UINavigationController *rootVC = [[UINavigationController alloc] initWithRootViewController:layoutViewController];
-    
-    window.rootViewController = rootVC;
+    UINavigationController *navigationVC = [[UINavigationController alloc] initWithRootViewController:rootVC];
+    navigationVC.navigationBar.translucent = NO;
+    window.rootViewController = navigationVC;
     
     self.window = window;
     [window makeKeyAndVisible];

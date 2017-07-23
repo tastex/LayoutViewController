@@ -13,6 +13,7 @@
 		BCD499E91F1FE9A600DD26D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BCD499E81F1FE9A600DD26D8 /* Assets.xcassets */; };
 		BCD499EC1F1FE9A600DD26D8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BCD499EA1F1FE9A600DD26D8 /* LaunchScreen.storyboard */; };
 		BCD499F51F1FFCF000DD26D8 /* ContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCD499F41F1FFCF000DD26D8 /* ContentViewController.m */; };
+		BCD499F81F24C21400DD26D8 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCD499F71F24C21400DD26D8 /* RootViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,8 @@
 		BCD499ED1F1FE9A600DD26D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BCD499F31F1FFCF000DD26D8 /* ContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentViewController.h; sourceTree = "<group>"; };
 		BCD499F41F1FFCF000DD26D8 /* ContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentViewController.m; sourceTree = "<group>"; };
+		BCD499F61F24C21400DD26D8 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		BCD499F71F24C21400DD26D8 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,10 +64,12 @@
 			children = (
 				BCD499DF1F1FE9A600DD26D8 /* AppDelegate.h */,
 				BCD499E01F1FE9A600DD26D8 /* AppDelegate.m */,
-				BCD499F31F1FFCF000DD26D8 /* ContentViewController.h */,
-				BCD499F41F1FFCF000DD26D8 /* ContentViewController.m */,
+				BCD499F61F24C21400DD26D8 /* RootViewController.h */,
+				BCD499F71F24C21400DD26D8 /* RootViewController.m */,
 				BCD499E21F1FE9A600DD26D8 /* LayoutViewController.h */,
 				BCD499E31F1FE9A600DD26D8 /* LayoutViewController.m */,
+				BCD499F31F1FFCF000DD26D8 /* ContentViewController.h */,
+				BCD499F41F1FFCF000DD26D8 /* ContentViewController.m */,
 				BCD499E81F1FE9A600DD26D8 /* Assets.xcassets */,
 				BCD499EA1F1FE9A600DD26D8 /* LaunchScreen.storyboard */,
 				BCD499ED1F1FE9A600DD26D8 /* Info.plist */,
@@ -156,6 +161,7 @@
 				BCD499E41F1FE9A600DD26D8 /* LayoutViewController.m in Sources */,
 				BCD499E11F1FE9A600DD26D8 /* AppDelegate.m in Sources */,
 				BCD499DE1F1FE9A600DD26D8 /* main.m in Sources */,
+				BCD499F81F24C21400DD26D8 /* RootViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +314,7 @@
 				BCD499F21F1FE9A600DD26D8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

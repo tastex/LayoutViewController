@@ -7,89 +7,136 @@
 //
 
 #import "LayoutViewController.h"
-#import "ContentViewController.h"
+
 
 @interface LayoutViewController ()
-@property (strong, nonatomic) NSArray *layoutTypes;
-@property (strong, nonatomic) NSString *currentType;
+@property int amountOfVC;
+
 @end
 
 @implementation LayoutViewController
 
 
+- (instancetype) initWithType:(NSString *)type {
+    NSLog(@"init layoutVC with type: %@", type);
+    self = [super init];
+    self.currentType = type;
+    return self;
+}
+
+- (NSMutableArray  *)viewControllers {
+    if (!_viewControllers) _viewControllers = [[NSMutableArray alloc] init];
+    return _viewControllers;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    self.layoutTypes = [[NSArray alloc] initWithObjects:@"=H", @"=V", @"1+H", @"1+V", nil];
-    
-    UISegmentedControl *segmentControl = [[UISegmentedControl alloc] initWithItems:self.layoutTypes];
-    [segmentControl addTarget:self action:@selector(segementedControlTapped:) forControlEvents:UIControlEventValueChanged];
-    segmentControl.selectedSegmentIndex = 0;
-    [self segementedControlTapped: segmentControl];
-    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:segmentControl];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addVC:)];
 }
 
+- (void)addVC {
+    if (self.amountOfVC >= [LayoutViewController maxAmountOfVC]) return;
+    
+    ContentViewController *contentVC = [[ContentViewController alloc] init];
+    [self.viewControllers addObject:contentVC];
+    
+    self.amountOfVC = (int) [self.viewControllers count];
+    
+    [self updateChildViewControllers];
+}
 
-- (void)addVC:(id)sender {
+- (void)deleteVC:(id)vc {
+    NSLog(@"delete from parent VC");
     
-    [self addChildViewController:[[ContentViewController alloc] init]];
+    [self.viewControllers removeObject:vc];
+    [vc removeFromParentViewController];
     
-    [self.view addSubview:self.childViewControllers.lastObject.view];
-    
+    self.amountOfVC = (int) [self.viewControllers count];
     [self updateContent];
 }
 
-- (void)segementedControlTapped:(UISegmentedControl *)sender {
-    self.currentType = [self.layoutTypes objectAtIndex:[sender selectedSegmentIndex]];
-    
+- (void)updateChildViewControllers {
+    for (UIViewController *vc in self.viewControllers) {
+        if ([self.childViewControllers containsObject:vc] == NO) {
+            [self addChildViewController:vc];
+            [self.view addSubview:vc.view];
+        }
+    }
     [self updateContent];
 }
+
+- (void)setCurrentType:(NSString *)currentType {
+    if (_currentType != currentType) {
+        _currentType = currentType;
+        [self updateContent];
+    }
+}
+
+
 
 - (void)updateContent {
-    
     for (UIViewController *childVC in self.childViewControllers) {
-        
         childVC.view.frame = [self getViewFrameForViewController: childVC];
-        
+        [childVC viewWillAppear:NO];
     }
-    
 }
 
 
 - (CGRect)getViewFrameForViewController:(UIViewController *)vc {
-    int amountOfVC = (int) [self.childViewControllers count];
+    int amountOfVC = self.amountOfVC;
     
     if (amountOfVC == 0) {
         return CGRectNull;
     }
     
-    int indexOfVC = (int) [self.childViewControllers indexOfObject:vc];
+    CGRect frame = self.view.frame;
     
-    CGFloat width = self.view.frame.size.width/amountOfVC;
-    CGFloat height = self.view.frame.size.height;
-    CGFloat x = self.view.frame.origin.x + width*indexOfVC;
-    CGFloat y = self.view.frame.origin.y;
+    int indexOfVC = (int) [self.childViewControllers indexOfObject:vc];
+
+    if ([self.currentType rangeOfString:@"+H"].location != NSNotFound ) {
+        
+        frame.size.height = amountOfVC > 1 ? frame.size.height/2 : frame.size.height;
+    
+        if (indexOfVC == 0) return frame;
+        
+        frame.origin.y = frame.size.height;
+        indexOfVC = indexOfVC-1;
+        amountOfVC = amountOfVC-1;
+    }else if ([self.currentType rangeOfString:@"+V"].location != NSNotFound ) {
+        
+        frame.size.width = amountOfVC > 1 ? frame.size.width/2 : frame.size.width;
+        
+        if (indexOfVC == 0) return frame;
+        
+        frame.origin.x = frame.size.width;
+        indexOfVC = indexOfVC-1;
+        amountOfVC = amountOfVC-1;
+    }
+    
+    
+    
+    CGFloat width = frame.size.width/amountOfVC;
+    CGFloat height = frame.size.height;
+    CGFloat x = frame.origin.x + width*indexOfVC;
+    CGFloat y = frame.origin.y;
     
     
     if ([self.currentType rangeOfString:@"V"].location != NSNotFound ) {
-        width = self.view.frame.size.width;
-        height = self.view.frame.size.height/amountOfVC;
-        x = self.view.frame.origin.x;
-        y = self.view.frame.origin.y + height*indexOfVC;
+        width = frame.size.width;
+        height = frame.size.height/amountOfVC;
+        x = frame.origin.x;
+        y = frame.origin.y + height*indexOfVC;
     }
     
     return CGRectMake(x, y, width, height);
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+
+
+- (NSArray *)layoutTypes {
+    if (!_layoutTypes) _layoutTypes = [[NSArray alloc] initWithObjects:@"=H", @"=V", @"1+H", @"1+V", nil];
+    return _layoutTypes;
 }
 
-
-
++ (int)maxAmountOfVC { return 10;}
 
 @end
