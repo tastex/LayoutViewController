@@ -14,12 +14,16 @@
 @property (strong, nonatomic) NSMutableArray *viewControllers; 
 @property (strong, nonatomic) NSString *currentType;
 @property (strong, nonatomic) NSArray *layoutTypes;
+@property (strong, nonatomic) ContentViewController *selectedVC;
 
 - (instancetype)initWithType:(NSString *)type;
 
 
 - (void)addVC;
 - (void)deleteVC:(id)vc;
+
+- (void)splitVCVertically;
+- (void)splitVCHorizontally;
 
 + (int)maxAmountOfVC;
 

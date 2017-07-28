@@ -11,6 +11,8 @@
 
 @interface RootViewController ()
 @property (strong, nonatomic) LayoutViewController *layoutVC;
+@property (strong, nonatomic)   UITapGestureRecognizer *singleTap;
+
 @end
 
 @implementation RootViewController
@@ -33,8 +35,19 @@
     segmentControl.selectedSegmentIndex = 0;
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:segmentControl];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addVC)];
     
+    NSArray *leftBarButtonItems = [NSArray arrayWithObjects:
+                                   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addVC)],
+                                   [[UIBarButtonItem alloc] initWithTitle:@"sv" style:UIBarButtonItemStylePlain target:self action:@selector(splitVCVertically)],
+                                   [[UIBarButtonItem alloc] initWithTitle:@"sh" style:UIBarButtonItemStylePlain target:self action:@selector(splitVCHorizontally)],
+                                   nil];
+    
+    self.navigationItem.leftBarButtonItems = leftBarButtonItems;
+    
+    
+    self.singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTaps:)];
+    self.singleTap.numberOfTapsRequired = 1;
+    [self.view addGestureRecognizer:self.singleTap];
 }
 
 
@@ -43,8 +56,44 @@
 }
 
 
-- (void)addVC{
+- (void)addVC {
     [self.layoutVC addVC];
+}
+
+- (void)splitVCVertically {
+    [self.layoutVC splitVCVertically];
+}
+
+- (void)splitVCHorizontally {
+    [self.layoutVC splitVCHorizontally];
+}
+
+
+- (void)handleTaps:(UITapGestureRecognizer *)sender {
+
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        CGPoint touchPoint = [sender locationInView:self.layoutVC.view];
+        NSLog(@"Touch point: %@", NSStringFromCGPoint(touchPoint));
+        
+        UIView *contentView = [self.layoutVC.view hitTest:touchPoint withEvent:nil];
+        NSUInteger viewIndex = [self.layoutVC.view.subviews indexOfObject:contentView];
+        
+        self.layoutVC.selectedVC = [self.layoutVC.childViewControllers objectAtIndex:viewIndex];
+        
+        CGPoint center = contentView.center;
+        [UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
+        [UIView animateWithDuration:0.2
+                         animations:^(){
+                             contentView.center = CGPointMake(center.x, center.y-15);
+                         }
+                         completion:^(BOOL finished) {
+                                contentView.center = center;
+                         }];
+        
+        //NSLog(@"View index: %d", index);
+    }
+    
 }
 
 

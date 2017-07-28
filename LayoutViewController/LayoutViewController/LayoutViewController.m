@@ -10,7 +10,7 @@
 
 
 @interface LayoutViewController ()
-@property int amountOfVC;
+
 
 @end
 
@@ -34,12 +34,11 @@
 }
 
 - (void)addVC {
-    if (self.amountOfVC >= [LayoutViewController maxAmountOfVC]) return;
+    if ((int) [self.viewControllers count] >= [LayoutViewController maxAmountOfVC]) return;
     
     ContentViewController *contentVC = [[ContentViewController alloc] init];
     [self.viewControllers addObject:contentVC];
     
-    self.amountOfVC = (int) [self.viewControllers count];
     
     [self updateChildViewControllers];
 }
@@ -50,9 +49,19 @@
     [self.viewControllers removeObject:vc];
     [vc removeFromParentViewController];
     
-    self.amountOfVC = (int) [self.viewControllers count];
     [self updateContent];
 }
+
+
+- (void)splitVCVertically {
+    if (self.selectedVC == nil) return;
+}
+
+- (void)splitVCHorizontally {
+    if (self.selectedVC == nil) return;
+    
+}
+
 
 - (void)updateChildViewControllers {
     for (UIViewController *vc in self.viewControllers) {
@@ -74,14 +83,15 @@
 
 
 - (void)updateContent {
-
+    
     for (UIViewController *childVC in self.childViewControllers) {
+        
         [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.5];
+        [UIView setAnimationDuration:0.3];
         [UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
         
         childVC.view.frame = [self getViewFrameForViewController: childVC];
-        [childVC viewWillAppear:NO];
+        //[childVC viewWillAppear:NO];
         
         [UIView commitAnimations];
     }
@@ -90,7 +100,7 @@
 
 
 - (CGRect)getViewFrameForViewController:(UIViewController *)vc {
-    int amountOfVC = self.amountOfVC;
+    int amountOfVC = (int) [self.viewControllers count];
     
     if (amountOfVC == 0) {
         return CGRectNull;
@@ -99,11 +109,11 @@
     CGRect frame = self.view.frame;
     
     int indexOfVC = (int) [self.childViewControllers indexOfObject:vc];
-
+    
     if ([self.currentType rangeOfString:@"+H"].location != NSNotFound ) {
         
         frame.size.height = amountOfVC > 1 ? frame.size.height/2 : frame.size.height;
-    
+        
         if (indexOfVC == 0) return frame;
         
         frame.origin.y = frame.size.height;
