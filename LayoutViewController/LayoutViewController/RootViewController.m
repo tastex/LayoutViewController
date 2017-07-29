@@ -77,23 +77,34 @@
         NSLog(@"Touch point: %@", NSStringFromCGPoint(touchPoint));
         
         UIView *contentView = [self.layoutVC.view hitTest:touchPoint withEvent:nil];
+        
+        if ([self.layoutVC.view.subviews containsObject:contentView] == NO) return;
+        
         NSUInteger viewIndex = [self.layoutVC.view.subviews indexOfObject:contentView];
         
-        self.layoutVC.selectedVC = [self.layoutVC.childViewControllers objectAtIndex:viewIndex];
+        self.layoutVC.selectedVC = [self.layoutVC.viewControllers objectAtIndex:viewIndex];
         
-        CGPoint center = contentView.center;
-        [UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
-        [UIView animateWithDuration:0.2
-                         animations:^(){
-                             contentView.center = CGPointMake(center.x, center.y-15);
-                         }
-                         completion:^(BOOL finished) {
-                                contentView.center = center;
-                         }];
+        [self animateSelectedView:contentView];
         
-        //NSLog(@"View index: %d", index);
+        NSLog(@"Selected view index: %lu", (unsigned long)viewIndex);
     }
     
+}
+
+- (void)animateSelectedView:(UIView *)view {
+    CGPoint center = view.center;
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
+    [UIView animateWithDuration:0.1
+                     animations:^(){
+                         view.center = CGPointMake(center.x, center.y-15);
+                     }
+                     completion:^(BOOL finished) {
+                         [UIView beginAnimations:nil context:nil];
+                         [UIView setAnimationDuration:0.1];
+                         [UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
+                         view.center = center;
+                         [UIView commitAnimations];
+                     }];
 }
 
 

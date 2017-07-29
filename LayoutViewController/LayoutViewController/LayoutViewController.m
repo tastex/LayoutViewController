@@ -46,6 +46,8 @@
 - (void)deleteVC:(id)vc {
     NSLog(@"delete from parent VC");
     
+    if (vc == self.selectedVC) self.selectedVC = nil;
+    
     [self.viewControllers removeObject:vc];
     [vc removeFromParentViewController];
     
@@ -55,11 +57,60 @@
 
 - (void)splitVCVertically {
     if (self.selectedVC == nil) return;
+    
+    CGRect frame = self.selectedVC.view.frame;
+    CGFloat height = frame.size.height/2;
+    
+    CGRect newFrame = CGRectMake(frame.origin.x, frame.origin.y+height, frame.size.width, height);
+    ContentViewController *contentVC = [self insertViewControllerAboveSelectedWithViewFrame: CGRectMake(newFrame.origin.x, newFrame.origin.y + height, newFrame.size.width, 0.0)];
+    
+    
+    [UIView beginAnimations:nil context:nil];
+    [self.selectedVC.view setFrame:CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, height)];
+    [self.selectedVC viewWillAppear:NO];
+    
+    [contentVC.view setFrame:newFrame];
+    [contentVC viewWillAppear:NO];
+    
+    [UIView commitAnimations];
+    
 }
 
 - (void)splitVCHorizontally {
     if (self.selectedVC == nil) return;
     
+    CGRect frame = self.selectedVC.view.frame;
+    CGFloat width = frame.size.width/2;
+    
+    CGRect newFrame = CGRectMake(frame.origin.x+width, frame.origin.y, width, frame.size.height);
+    ContentViewController *contentVC = [self insertViewControllerAboveSelectedWithViewFrame: CGRectMake(newFrame.origin.x + width, newFrame.origin.y, 0.0, newFrame.size.height)];
+    
+    
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.3];
+    
+    [self.selectedVC.view setFrame:CGRectMake(frame.origin.x, frame.origin.y, width, frame.size.height)];
+    [self.selectedVC viewWillAppear:NO];
+    
+    [contentVC.view setFrame:newFrame];
+    [contentVC viewWillAppear:NO];
+    
+    [UIView commitAnimations];
+    
+}
+
+- (ContentViewController *)insertViewControllerAboveSelectedWithViewFrame:(CGRect)frame {
+    ContentViewController *contentVC = [[ContentViewController alloc] init];
+    contentVC.view.frame = frame;
+    NSUInteger newVCIndex = [self.viewControllers indexOfObject:self.selectedVC] + 1;
+    
+    [self addChildViewController:contentVC];
+    [self.viewControllers insertObject:contentVC atIndex:newVCIndex];
+    [self.view insertSubview:contentVC.view aboveSubview:self.selectedVC.view];
+    
+    NSLog(@"New VC index: %lu, New view index: %lu", (unsigned long)newVCIndex, (unsigned long)[self.view.subviews indexOfObject:contentVC.view]);
+    
+    return contentVC;
 }
 
 
@@ -76,26 +127,83 @@
 - (void)setCurrentType:(NSString *)currentType {
     if (_currentType != currentType) {
         _currentType = currentType;
-        [self updateContent];
+        [self updateContentLayout];
     }
 }
 
 
 
-- (void)updateContent {
+- (void)updateContent{
     
-    for (UIViewController *childVC in self.childViewControllers) {
+    for (UIViewController *childVC in self.viewControllers) {
+        
+        CGRect frame = [self getViewFrameForViewController: childVC];
+        
+        if ([self.viewControllers lastObject] == childVC & [self.viewControllers firstObject] != childVC) {
+            
+            if (CGPointEqualToPoint(childVC.view.frame.origin, CGPointZero)) {
+                CGRect lastFrame = frame;
+                if ([self.currentType rangeOfString:@"H"].location != NSNotFound) {
+                    lastFrame.origin.x = lastFrame.origin.x + frame.size.width;
+                }else{
+                    lastFrame.origin.y = lastFrame.origin.y + frame.size.height;
+                }
+                [childVC.view setFrame:lastFrame];
+            }
+            
+        }
         
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.3];
         [UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
         
-        childVC.view.frame = [self getViewFrameForViewController: childVC];
-        //[childVC viewWillAppear:NO];
+        [childVC.view setFrame:frame];
+        [childVC viewWillAppear:NO];
         
         [UIView commitAnimations];
     }
+}
+
+- (void)updateContentLayout {
     
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.2];
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
+    
+    for (UIViewController *childVC in self.viewControllers) {
+        
+        CGRect newFrame = [self getViewFrameForViewController: childVC];
+        CGRect frame = [self increaseRect:newFrame withMultiplier:-0.3];
+        
+        
+        [childVC.view setFrame:frame];
+        [childVC viewWillAppear:NO];
+
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.3];
+        [UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
+        
+        [childVC.view setFrame:newFrame];
+        [childVC viewWillAppear:NO];
+        
+        [UIView commitAnimations];
+        
+    }
+    [UIView commitAnimations];
+
+}
+
+
+- (CGRect)increaseRect:(CGRect)rect withMultiplier:(CGFloat)multiplier
+{
+    NSLog(@"frame0: %@", NSStringFromCGRect(rect));
+    CGFloat startWidth = CGRectGetWidth(rect);
+    CGFloat startHeight = CGRectGetHeight(rect);
+    CGFloat adjustmentWidth = (startWidth * multiplier) / 2.0;
+    CGFloat adjustmentHeight = (startHeight * multiplier) / 2.0;
+    rect = CGRectInset(rect, -adjustmentWidth, -adjustmentHeight);
+    NSLog(@"frame1: %@", NSStringFromCGRect(rect));
+    return rect;
 }
 
 
@@ -108,7 +216,7 @@
     
     CGRect frame = self.view.frame;
     
-    int indexOfVC = (int) [self.childViewControllers indexOfObject:vc];
+    int indexOfVC = (int) [self.viewControllers indexOfObject:vc];
     
     if ([self.currentType rangeOfString:@"+H"].location != NSNotFound ) {
         
@@ -155,6 +263,6 @@
     return _layoutTypes;
 }
 
-+ (int)maxAmountOfVC { return 10;}
++ (int)maxAmountOfVC { return 25;}
 
 @end
