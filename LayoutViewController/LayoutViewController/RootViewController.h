@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LayoutViewController.h"
 
-@interface RootViewController : UIViewController
+@interface RootViewController : UIPageViewController
 
 @end

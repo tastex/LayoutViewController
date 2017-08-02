@@ -20,7 +20,11 @@
     CGRect mainFrame = [[UIScreen mainScreen] bounds];
     UIWindow *window = [[UIWindow alloc] initWithFrame:mainFrame];
     
-    RootViewController *rootVC = [[RootViewController alloc] init];
+    RootViewController *rootVC = [[RootViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+    
+    
+    LayoutViewController *firstLayoutVC = [[LayoutViewController alloc] initWithType:@"=H"];
+    [rootVC setViewControllers:[[NSArray alloc] initWithObjects:firstLayoutVC, nil] direction:UIPageViewControllerNavigationDirectionForward  animated:YES completion:nil];
     
     UINavigationController *navigationVC = [[UINavigationController alloc] initWithRootViewController:rootVC];
     navigationVC.navigationBar.translucent = NO;
